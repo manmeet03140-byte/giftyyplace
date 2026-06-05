@@ -9,9 +9,17 @@ export async function middleware(request: NextRequest) {
     },
   });
 
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    console.error("Missing Supabase environment variables!");
+    // If we are missing env vars, just skip auth checks to prevent 500 errors,
+    // or you could return a specific error page. For now, let the request pass
+    // so the site doesn't completely crash, but auth won't work.
+    return response;
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
